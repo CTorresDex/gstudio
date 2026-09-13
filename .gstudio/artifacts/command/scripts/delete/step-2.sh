@@ -1,19 +1,19 @@
 #!/bin/sh
-set -e
+set -eu
 
-path="$1"
+path="${1:-}"
 
 if [ -z "$path" ]; then
-    echo "Error: command path argument is required" >&2
+    echo "Usage: $0 <path>" >&2
     exit 1
 fi
 
 file="src/commands/${path}.command.ts"
 
 if [ ! -f "$file" ]; then
-    echo "Error: command file does not exist: $file" >&2
+    echo "Command file does not exist: $file" >&2
     exit 1
 fi
 
 rm "$file"
-echo "Deleted $file"
+echo "Removed $file"

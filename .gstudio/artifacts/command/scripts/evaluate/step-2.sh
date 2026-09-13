@@ -1,46 +1,17 @@
 #!/bin/sh
-set -u
+set -e
 
-if [ "$#" -eq 0 ]; then
-  echo "Usage: $0 <command path words...> (e.g. compile artifact)"
+path="$1"
+
+if [ -z "$path" ]; then
+  echo "Error: command path is required" >&2
   exit 1
 fi
 
-# Re-split all arguments on whitespace to get individual path words,
-# regardless of how they were originally passed.
-words=$(printf '%s' "$*")
-set -- $words
+file="src/commands/${path}.command.ts"
 
-if [ "$#" -eq 0 ]; then
-  echo "Usage: $0 <command path words...> (e.g. compile artifact)"
-  exit 1
-fi
-
-last_index=$#
-i=1
-dir_parts=""
-filename=""
-for w in "$@"; do
-  if [ "$i" -eq "$last_index" ]; then
-    filename="$w"
-  else
-    if [ -z "$dir_parts" ]; then
-      dir_parts="$w"
-    else
-      dir_parts="$dir_parts/$w"
-    fi
-  fi
-  i=$((i + 1))
-done
-
-if [ -n "$dir_parts" ]; then
-  filepath="src/commands/$dir_parts/$filename.command.ts"
-else
-  filepath="src/commands/$filename.command.ts"
-fi
-
-if [ ! -f "$filepath" ]; then
-  echo "Command file not found: $filepath"
+if [ ! -f "$file" ]; then
+  echo "Error: command file does not exist: $file" >&2
   exit 1
 fi
 
@@ -95,7 +66,7 @@ END {
     print startline[j] "\t" text[j]
   }
 }
-' "$filepath" > "$tmpfile"
+' "$file" > "$tmpfile"
 
 found_default=0
 discrepancy_found=0
@@ -120,7 +91,7 @@ while IFS='	' read -r lineno snippet; do
 done < "$tmpfile"
 
 if [ "$found_default" -eq 0 ]; then
-  echo "Discrepancy: no default export function found in $filepath; expected 'export default async function (args: string[], context: { flags: Record<string, string | boolean> })'."
+  echo "Discrepancy: no default export function found in $file; expected 'export default async function (args: string[], context: { flags: Record<string, string | boolean> })'."
   discrepancy_found=1
 fi
 

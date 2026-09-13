@@ -1,16 +1,16 @@
 #!/bin/sh
 set -e
 
-path="$1"
+command_path="$1"
 
-if [ -z "$path" ]; then
+if [ -z "$command_path" ]; then
     echo "Error: command path argument is required" >&2
     exit 1
 fi
 
-file="src/commands/${path}.command.ts"
+file_path="src/commands/${command_path}.command.ts"
 
-if [ ! -f "$file" ]; then
-    echo "Error: command file does not exist: $file" >&2
+if [ ! -f "$file_path" ]; then
+    echo "Error: command file does not exist: $file_path" >&2
     exit 1
 fi
