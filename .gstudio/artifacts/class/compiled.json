@@ -1,0 +1,50 @@
+{
+    "steps": {
+        ".gstudio/artifacts/class/scripts/create/step-2.sh": {
+            "hash": "38a777c983158c456dd3ced3fa0f763b15b1d066c90fd032070f03ebd4140a86",
+            "instruction": "Run {{script}} <name> [content] where <name> is the PascalCase class name and the optional [content] is the class body text."
+        },
+        ".gstudio/artifacts/class/scripts/list/step-2.sh": {
+            "hash": "0385121bde3a904414328ad96152e36e50d6da9d235b2565a06c8fc585163da9",
+            "instruction": "Run {{script}} [search term] to list all classes in src/classes, optionally filtered by the given search term."
+        },
+        ".gstudio/artifacts/class/scripts/update/step-2.sh": {
+            "hash": "39d137d841b0600bd9c113f1f345f6a5ca663c2122b5fa0ed2a97380e5364b63",
+            "instruction": "Run {{script}} <class-name> <change-request> to verify the class file exists before applying the update."
+        },
+        ".gstudio/artifacts/class/scripts/delete/step-2.sh": {
+            "hash": "601e5e4aad195b0af4beaaca7589a22909827209044283c171bedb4fe50d1c78",
+            "instruction": "Run {{script}} <name> where <name> is the PascalCase class name whose file should be deleted."
+        },
+        ".gstudio/artifacts/class/scripts/delete/step-3.sh": {
+            "hash": "b262ba91733847628e0b4b0ef2b710ae19e5e32c14831b8d99e6bee71af27423",
+            "instruction": "Run {{script}} <name> to print every remaining reference to the class as `[file path]:[line number]` lines."
+        },
+        ".gstudio/artifacts/class/scripts/evaluate/step-2.sh": {
+            "hash": "df35782165d7c63ec31d34e0415c9ef17bf4319f378a4e79dd74f45066d2b1d9",
+            "instruction": "Run {{script}} <name> where <name> is the PascalCase class name to evaluate (e.g. `{{script}} UserService`)."
+        }
+    },
+    "descriptions": {
+        "create": {
+            "hash": "771c47c48c6bce0ab8267524651fad0c83cad6582e4f5ded97bb34e85285d528",
+            "text": "Scaffolds a new class file at src/classes/{Name}.class.ts with an empty or given body, failing if the file already exists."
+        },
+        "list": {
+            "hash": "b3f4c186c0539da0bae61db61461bf5e953c429bd9a685dad0019573a9c85d60",
+            "text": "Lists all classes in src/classes, optionally filtered by a search term, printing each match as its class name and file path."
+        },
+        "update": {
+            "hash": "bf76a9e10be78725dede39579881f1df228073819d8738d5a9e04177036d51cd",
+            "text": "Applies a natural-language change request to an existing class file at src/classes given the class name and description, failing if the file doesn't exist."
+        },
+        "delete": {
+            "hash": "ff7d0cb84606a166741f27b513a14dae93d30eb924202fbd7598ec2e92ee8c6b",
+            "text": "Deletes a class file at src/classes and removes all dangling references to it found elsewhere in the codebase, given the class name."
+        },
+        "evaluate": {
+            "hash": "eaf4ec5e356af61c3acad030bad0d19262b074734ea1b549eafae82c9e49cb41",
+            "text": "Checks that a class file has exactly one top-level named class export and contains no general-purpose utility functions, given the class name as input."
+        }
+    }
+}

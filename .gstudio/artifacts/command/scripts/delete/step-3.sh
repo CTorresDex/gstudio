@@ -1,11 +1,11 @@
 #!/bin/sh
 
 if [ "$#" -eq 0 ]; then
-    echo "Error: class name is required" >&2
+    echo "Error: command path is required" >&2
     exit 1
 fi
 
-name="$1"
+name="$*"
 
 matches=$(grep -rn -w \
     --exclude-dir=.git \

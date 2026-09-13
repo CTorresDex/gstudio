@@ -1,6 +1,6 @@
 ---
 name: delete-class
-description: Deletes a class artifact's file at src/classes and removes all dangling references to it found elsewhere in the codebase, given the class name.
+description: Deletes a class file at src/classes and removes all dangling references to it found elsewhere in the codebase, given the class name.
 ---
 
 # delete class
@@ -27,8 +27,8 @@ export class {name (PascalCase)} {
 
 1. **llm** — Input: class name
 
-2. **deterministic** — Run .gstudio/artifacts/class/scripts/delete/step-2.sh <name> to delete the class file at src/classes/<name>.class.ts, exiting 1 if the file does not exist.
+2. **deterministic** — Run .gstudio/artifacts/class/scripts/delete/step-2.sh <name> where <name> is the PascalCase class name whose file should be deleted.
 
-3. **deterministic** — Run `.gstudio/artifacts/class/scripts/delete/step-3.sh <name>` where `<name>` is the PascalCase class name to search for references of.
+3. **deterministic** — Run .gstudio/artifacts/class/scripts/delete/step-3.sh <name> to print every remaining reference to the class as `[file path]:[line number]` lines.
 
 4. **llm** — Remove all the dangling references to the class, run the previous command to ensure all the references are gone. If not, fix it and run the command again.

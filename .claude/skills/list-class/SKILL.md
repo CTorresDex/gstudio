@@ -1,6 +1,6 @@
 ---
 name: list-class
-description: "Lists all classes in src/classes, optionally filtered by a search term, printing each as class name: file path."
+description: Lists all classes in src/classes, optionally filtered by a search term, printing each match as its class name and file path.
 ---
 
 # list class
@@ -27,6 +27,6 @@ export class {name (PascalCase)} {
 
 1. **llm** — Input (Optional): search term
 
-2. **deterministic** — Run .gstudio/artifacts/class/scripts/list/step-2.sh [search term] to list all classes in the class folder, optionally filtered to those whose name contains the given search term.
+2. **deterministic** — Run .gstudio/artifacts/class/scripts/list/step-2.sh [search term] to list all classes in src/classes, optionally filtered by the given search term.
 
 3. **llm** — Report the results of the previous command.

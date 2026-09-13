@@ -1,0 +1,50 @@
+{
+    "steps": {
+        ".gstudio/artifacts/command/scripts/create/step-2.sh": {
+            "hash": "5ca426454b163fa42da525b244afc7d909a18c4f7141a7b7767e9ff0857e49e4",
+            "instruction": "Run {{script}} \"<command name>\" [\"<optional content>\"], where `<command name>` is the space-separated command words (e.g. \"compile artifact\") and the optional second argument is the body content to place inside the exported function."
+        },
+        ".gstudio/artifacts/command/scripts/list/step-2.sh": {
+            "hash": "dec6d881f0e9f15ffaaa4a282744363b516e9206f6858d20d30e4625765bb7ad",
+            "instruction": "Run the script as `{{script}} [search term]`, omitting the argument to list every command."
+        },
+        ".gstudio/artifacts/command/scripts/update/step-2.sh": {
+            "hash": "b84af3c9fb6b79719b48af9810570379c6ad355a95371ddfbcdab0418d365ecd",
+            "instruction": "Run {{script}} <command-path> <change-request>, where `<command-path>` is the space-separated command name (e.g. `\"compile artifact\"`) and `<change-request>` is ignored by this step but should still be passed as the second argument."
+        },
+        ".gstudio/artifacts/command/scripts/delete/step-2.sh": {
+            "hash": "753c18948bb3a8ba5b58e105321f1c868981273a65dc7f9c3ea3fdd6bc8a34e5",
+            "instruction": "Run {{script}} <word1> [word2 ... wordN] where the words together are the command's name (e.g. `{{script}} compile artifact`), with the last word naming the file and any preceding words naming its parent folders."
+        },
+        ".gstudio/artifacts/command/scripts/delete/step-3.sh": {
+            "hash": "aa36bace498fe7634bea19681bbd0bdf7e7d59a5ca54c011682bb9e24f4ac261",
+            "instruction": "Run {{script}} <command path words...> (e.g. `{{script}} compile artifact`) to print every reference to that command as `[file path]:[line number]`."
+        },
+        ".gstudio/artifacts/command/scripts/evaluate/step-2.sh": {
+            "hash": "ead7151671282b931cef55d25c7e26f34479ad1b5ca91405126c7382ea601a15",
+            "instruction": "Run {{script}} with the command path as space-separated words (e.g. `{{script}} compile artifact`) to evaluate the corresponding src/commands/.../*.command.ts file."
+        }
+    },
+    "descriptions": {
+        "create": {
+            "hash": "6b3b182d1ceb074ae152510d871c22db1610ef24077fa760337320693cdbb313",
+            "text": "Scaffolds a new command file at src/commands/{path}.command.ts with an empty or given body, exiting 1 if the file already exists."
+        },
+        "list": {
+            "hash": "f8317242980630b2ba7848fa92db31ff06119082ea138ec81f733bc1f95aee68",
+            "text": "Lists all commands in src/commands matching an optional search term, printing each as \"command path: file path\"."
+        },
+        "update": {
+            "hash": "abae81411a81eb10035e557fb86d723adc3e21f583bfd52e5ff3dec3842aeb6c",
+            "text": "Applies a natural-language change request to an existing command file at src/commands, given the command path and a description of the change, failing if the command file does not exist"
+        },
+        "delete": {
+            "hash": "296e76d4a82d09c443c1bf6633b9195587a92079d2702d3cac402edf7b242b67",
+            "text": "Deletes a command artifact's file at src/commands and removes all dangling references to it found elsewhere in the codebase, given the command path."
+        },
+        "evaluate": {
+            "hash": "6bcc3fdd44502b74ebe5c73112c66b887d36dec05682a43784aacbd008f4a8ae",
+            "text": "Checks that a command file has exactly one top-level default-exported async function reading only args and context.flags and delegating all logic to src/classes, given the command path."
+        }
+    }
+}

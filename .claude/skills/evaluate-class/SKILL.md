@@ -1,6 +1,6 @@
 ---
 name: evaluate-class
-description: Checks that a class file has exactly one top-level named class export and that it contains no general-purpose utility functions, given the class name.
+description: Checks that a class file has exactly one top-level named class export and contains no general-purpose utility functions, given the class name as input.
 ---
 
 # evaluate class
@@ -27,7 +27,6 @@ export class {name (PascalCase)} {
 
 1. **llm** — Input: class name
 
-2. **deterministic** — Run .gstudio/artifacts/class/scripts/evaluate/step-2.sh <name> where <name> is the class name (PascalCase) whose file src/classes/<name>.class.ts should be evaluated.
+2. **deterministic** — Run .gstudio/artifacts/class/scripts/evaluate/step-2.sh <name> where <name> is the PascalCase class name to evaluate (e.g. `.gstudio/artifacts/class/scripts/evaluate/step-2.sh UserService`).
 
-3. **llm** — Evaluate that:
-       1. The functions defined in the class are only from the scope of the class, any general purpose utility function must be defined at the respective utils class called by the name of the type (StringUtils, FunctionUtils, NumberUtils, etc...)
+3. **llm** — Ensure that the functions defined in the class are only from the scope of the class, any general purpose utility function must be defined at the respective utils class called by the name of the type (StringUtils, FunctionUtils, NumberUtils, etc...)
