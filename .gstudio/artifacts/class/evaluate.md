@@ -2,7 +2,7 @@
 <deterministic>
     Evaluate that:
     
-    1. The file has ONLY have one top level definition and must follow the following template:
+    1. The file has ONLY have one top level definition and must be a named export of a class.
     
     If it complies with all the rules, exits 0.
     Otherwise, iterate over each discrepancy, print them to stdout and exit with 1.
