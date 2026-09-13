@@ -14,3 +14,5 @@ if [ ! -e "$file" ]; then
     echo "Error: file does not exist: $file" >&2
     exit 1
 fi
+
+echo "Found $file"

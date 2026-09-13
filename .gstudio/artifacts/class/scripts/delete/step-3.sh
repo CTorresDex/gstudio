@@ -1,5 +1,4 @@
 #!/bin/sh
-set -e
 
 name="$1"
 
@@ -8,7 +7,13 @@ if [ -z "$name" ]; then
     exit 1
 fi
 
-grep -rn -w \
+matches=$(grep -rn -w \
     --exclude-dir=.git \
     --exclude-dir=node_modules \
-    "$name" . | awk -F: '{print $1":"$2}'
+    "$name" . 2>/dev/null)
+
+if [ -n "$matches" ]; then
+    echo "$matches" | sed -E 's#^\./##' | awk -F: '{print $1":"$2}'
+fi
+
+exit 0

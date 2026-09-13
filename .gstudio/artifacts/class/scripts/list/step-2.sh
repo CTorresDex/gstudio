@@ -1,25 +1,22 @@
 #!/bin/sh
-set -eu
+set -e
 
-search_term="${1:-}"
-classes_dir="src/classes"
+search_term="$1"
+dir="src/classes"
 
-if [ ! -d "$classes_dir" ]; then
+if [ ! -d "$dir" ]; then
     exit 0
 fi
 
-for file in "$classes_dir"/*.class.ts; do
+for file in "$dir"/*.class.ts; do
     [ -e "$file" ] || continue
-
     filename=$(basename "$file")
-    class_name="${filename%.class.ts}"
-
+    classname="${filename%.class.ts}"
     if [ -n "$search_term" ]; then
-        case "$class_name" in
+        case "$classname" in
             *"$search_term"*) ;;
             *) continue ;;
         esac
     fi
-
-    echo "${class_name}: ${file}"
+    echo "$classname: $file"
 done
