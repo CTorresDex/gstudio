@@ -1,0 +1,50 @@
+{
+    "steps": {
+        ".gstudio/artifacts/artifact/scripts/create/step-2.sh": {
+            "hash": "661ccfc178976def08ea4f46410d400b044e3f617e987ad3a5c741739c3e29a3",
+            "instruction": "Run {{script}} <name> where <name> is the lowercase word naming the new artifact to scaffold."
+        },
+        ".gstudio/artifacts/artifact/scripts/list/step-2.sh": {
+            "hash": "017c0fd3a3e43cf35a7aba856b204a1fdecaa2d1775749950c16980cfb9dac46",
+            "instruction": "Run {{script}} [search-term] to list every artifact whose name or definition file path contains the optional search term, or all artifacts if omitted."
+        },
+        ".gstudio/artifacts/artifact/scripts/update/step-2.sh": {
+            "hash": "715c8ce15408d6fe3654c36f8f50437e24dcfb419a8f89831e0eaeb84ceedaea",
+            "instruction": "Run {{script}} <name> from the project root, where <name> is the artifact's id."
+        },
+        ".gstudio/artifacts/artifact/scripts/delete/step-2.sh": {
+            "hash": "7b0a67ee4d204fd3ab8374ffb37a36c98e922e2e680a9ddc02b6786c67e65aae",
+            "instruction": "Run `{{script}} <name>`, where `<name>` is the artifact's name."
+        },
+        ".gstudio/artifacts/artifact/scripts/delete/step-3.sh": {
+            "hash": "ab5ea31ae489626bca310d1eb85ad76dcc4c6877da0ada24d4adf8feb68890f4",
+            "instruction": "Run `{{script}} <name>` where `<name>` is the artifact name whose dangling references should be listed."
+        },
+        ".gstudio/artifacts/artifact/scripts/evaluate/step-2.ts": {
+            "hash": "8cd764748def4f9a1baf102abe0f3bb76042c60540498883a4bece15b17a0e13",
+            "instruction": "Run `{{script}} <name>` to evaluate whether the artifact named `<name>` complies with the rules and is fully compiled, printing any discrepancies to stdout and exiting 1, or printing a success message and exiting 0 when it complies."
+        }
+    },
+    "descriptions": {
+        "create": {
+            "hash": "5c42f816f22be862b1b23861dc8df87436acf83c272009d1074e28539f3f21bc",
+            "text": "Scaffolds a new artifact instance given its name and description, exiting 1 if the definition file already exists."
+        },
+        "list": {
+            "hash": "4a5c88edf7c497b08ebf5d4013278ee3bf90ced6063c9ce3c06c2f5f30680fb5",
+            "text": "Lists artifact definitions in the codebase, optionally filtered by a search term, and prints each match as its artifact name and file path."
+        },
+        "update": {
+            "hash": "a88b6b736513a5b8a8d0516f1665f6b096f71b61f26d37eb1859f93ef466e229",
+            "text": "Applies a natural-language change request to an existing artifact definition file, given the artifact name and the change request, exiting 1 if it does not exist."
+        },
+        "delete": {
+            "hash": "543581ae5c8ac4c9b35dfc8cf07a0f4d44da5a9aa6201923e5a3647a5a57c45f",
+            "text": "Deletes an artifact definition, its compiled scripts and skills, given the artifact name, and removes dangling references to it from the codebase."
+        },
+        "evaluate": {
+            "hash": "f82b05fa951f9e6229531d750aeb348dec5493d1fa9cd71a5ab73aa49b7d9927",
+            "text": "Checks that an artifact's definition file, parsing, action ordering, and compiled outputs match the compiler's expectations, given the artifact name as input."
+        }
+    }
+}

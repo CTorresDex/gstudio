@@ -1,46 +1,26 @@
 #!/bin/sh
 set -e
 
-name="$1"
-content="$2"
+path="$1"
 
-if [ -z "$name" ]; then
-  echo "Error: command name is required" >&2
-  exit 1
+if [ -z "$path" ]; then
+    echo "Error: command path is required" >&2
+    exit 1
 fi
 
-dir="src/commands"
-prev=""
-for word in $name; do
-  if [ -n "$prev" ]; then
-    dir="$dir/$prev"
-  fi
-  prev="$word"
-done
-last="$prev"
+file="src/commands/${path}.command.ts"
 
-if [ -z "$last" ]; then
-  echo "Error: command name is required" >&2
-  exit 1
+if [ -e "$file" ]; then
+    echo "Error: command file already exists at $file" >&2
+    exit 1
 fi
 
-filepath="$dir/$last.command.ts"
+mkdir -p "$(dirname "$file")"
 
-if [ -e "$filepath" ]; then
-  echo "Error: command file already exists at $filepath" >&2
-  exit 1
-fi
+cat > "$file" <<'EOF'
+export default async function (args: string[], context: { flags: Record<string, string | boolean> }) {
+    // command definition
+}
+EOF
 
-mkdir -p "$dir"
-
-{
-  echo 'export default async function (args: string[], context: { flags: Record<string, string | boolean> }) {'
-  if [ -n "$content" ]; then
-    printf '%s\n' "$content"
-  else
-    echo '    // command definition'
-  fi
-  echo '}'
-} > "$filepath"
-
-echo "Created $filepath"
+echo "Created $file"
