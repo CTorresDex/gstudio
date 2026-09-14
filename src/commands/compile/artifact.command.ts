@@ -1,3 +1,4 @@
+import { Agent } from '../../classes/Agent.class.ts'
 import { Artifact } from '../../classes/Artifact.class.ts'
 import { ArtifactCompiler } from '../../classes/ArtifactCompiler.class.ts'
 
@@ -5,8 +6,7 @@ export default async function (args: string[], context: { flags: Record<string, 
     if (args[0] === undefined) throw new Error('Usage: gstudio compile artifact <name> [--model <model>] [--effort <effort>]')
 
     const { skills, removed } = await new ArtifactCompiler({
-        model: typeof context.flags.model === 'string' ? context.flags.model : undefined,
-        effort: typeof context.flags.effort === 'string' ? context.flags.effort : undefined,
+        agent: new Agent(typeof context.flags.model === 'string' ? context.flags.model : undefined, typeof context.flags.effort === 'string' ? context.flags.effort : undefined),
     }).compile(await Artifact.load(args[0]))
 
     for (const skill of skills) {

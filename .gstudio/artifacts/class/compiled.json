@@ -21,8 +21,8 @@
             "instruction": "Run {{script}} <name> to print every remaining reference to the class as `[file path]:[line number]` lines."
         },
         ".gstudio/artifacts/class/scripts/evaluate/step-2.sh": {
-            "hash": "df35782165d7c63ec31d34e0415c9ef17bf4319f378a4e79dd74f45066d2b1d9",
-            "instruction": "Run {{script}} <name> where <name> is the PascalCase class name to evaluate (e.g. `{{script}} UserService`)."
+            "hash": "9556e974b81bab930a65aedfcebff8052c216fc46630ec4353064ce4b74e6979",
+            "instruction": "Run `{{script}} <name>` where `<name>` is the PascalCase class name (matching its file at src/classes/<name>.class.ts) to evaluate."
         }
     },
     "descriptions": {
@@ -43,7 +43,7 @@
             "text": "Deletes a class file at src/classes and removes all dangling references to it found elsewhere in the codebase, given the class name."
         },
         "evaluate": {
-            "hash": "eaf4ec5e356af61c3acad030bad0d19262b074734ea1b549eafae82c9e49cb41",
+            "hash": "2d5cdf42d179f6f4041565389203b192fa0f738ebca0a147d6a3e089f9a76ba5",
             "text": "Checks that a class file has exactly one top-level named class export and contains no general-purpose utility functions, given the class name as input."
         }
     }

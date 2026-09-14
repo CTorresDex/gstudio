@@ -4,72 +4,96 @@ set -e
 name="$1"
 
 if [ -z "$name" ]; then
-    echo "Error: class name is required." >&2
-    exit 1
+  echo "Error: class name is required" >&2
+  exit 1
 fi
 
 file="src/classes/${name}.class.ts"
 
-if [ ! -e "$file" ]; then
-    echo "File does not exist: $file"
-    exit 1
+if [ ! -f "$file" ]; then
+  echo "Error: class file does not exist: $file" >&2
+  exit 1
 fi
 
-analysis=$(awk '
+tmpfile=$(mktemp)
+trap 'rm -f "$tmpfile"' EXIT
+
+awk '
 {
-    line = $0
-    trimmed = line
-    gsub(/^[ \t]+/, "", trimmed)
-    gsub(/[ \t]+$/, "", trimmed)
+  line = $0
+  trimmed = line
+  gsub(/^[ \t]+/, "", trimmed)
+  gsub(/[ \t]+$/, "", trimmed)
 
-    is_blank_or_comment = (trimmed == "" || trimmed ~ /^\/\//)
-
-    if (!is_blank_or_comment && depth == 0 && trimmed !~ /^import[ \t(]/ && trimmed != "import") {
-        count++
-        defs[count] = trimmed
+  if (instmt == 0) {
+    if (incomment == 1) {
+      if (trimmed ~ /\*\//) incomment = 0
+    } else if (trimmed == "") {
+      # blank line, not a definition
+    } else if (trimmed ~ /^\/\//) {
+      # line comment, not a definition
+    } else if (trimmed ~ /^\/\*/) {
+      if (trimmed !~ /\*\//) incomment = 1
+    } else if (trimmed ~ /^import /) {
+      instmt = 1
+      isdef = 0
+    } else {
+      instmt = 1
+      isdef = 1
+      count++
+      startline[count] = NR
+      text[count] = trimmed
     }
+  } else {
+    if (isdef == 1) {
+      text[count] = text[count] " " trimmed
+    }
+  }
 
-    opens = gsub(/\{/, "{", line)
-    closes = gsub(/\}/, "}", line)
-    depth += opens - closes
+  if (incomment == 0) {
+    n = length(line)
+    for (k = 1; k <= n; k++) {
+      c = substr(line, k, 1)
+      if (c == "{") depth++
+      else if (c == "}") depth--
+    }
+  }
+
+  if (instmt == 1 && depth == 0) instmt = 0
 }
 END {
-    print count + 0
-    for (i = 1; i <= count; i++) {
-        print defs[i]
-    }
+  for (j = 1; j <= count; j++) {
+    print startline[j] "\t" text[j]
+  }
 }
-' "$file")
+' "$file" > "$tmpfile"
 
-count=$(printf "%s\n" "$analysis" | sed -n "1p")
-defs=$(printf "%s\n" "$analysis" | sed "1d")
+total=0
+discrepancy_found=0
 
-found_issue=0
+while IFS='	' read -r lineno snippet; do
+  total=$((total + 1))
+  if [ "$total" -eq 1 ]; then
+    normalized=$(printf '%s' "$snippet" | tr -s '[:space:]' ' ')
+    if printf '%s' "$normalized" | grep -Eq '^export class [A-Za-z_$][A-Za-z0-9_$]*[[:space:]]*(extends[^{]+)?(implements[^{]+)?\{'; then
+      :
+    else
+      echo "Discrepancy: top-level definition at line $lineno is not a named class export: $snippet"
+      discrepancy_found=1
+    fi
+  else
+    echo "Discrepancy: unexpected additional top-level definition at line $lineno (only one top-level definition is allowed): $snippet"
+    discrepancy_found=1
+  fi
+done < "$tmpfile"
 
-if [ "$count" -eq 0 ]; then
-    echo "No top-level definition found in $file."
-    found_issue=1
-elif [ "$count" -gt 1 ]; then
-    echo "Expected exactly one top-level definition in $file, found $count:"
-    printf "%s\n" "$defs" | while IFS= read -r d; do
-        [ -n "$d" ] && echo "  - $d"
-    done
-    found_issue=1
-else
-    def_line="$defs"
-    case "$def_line" in
-        "export class "*)
-            ;;
-        *)
-            echo "The top-level definition is not a named export of a class: $def_line"
-            found_issue=1
-            ;;
-    esac
+if [ "$total" -eq 0 ]; then
+  echo "Discrepancy: no top-level definition found in $file; expected a named class export."
+  discrepancy_found=1
 fi
 
-if [ "$found_issue" -eq 1 ]; then
-    exit 1
+if [ "$discrepancy_found" -eq 1 ]; then
+  exit 1
 fi
 
-echo "$file has exactly one top-level definition and it is a named export of a class."
 exit 0

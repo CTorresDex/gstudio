@@ -13,7 +13,9 @@ export default async function (args: string[], context: { flags: Record<string, 
 
     console.log(`Installed ${installed.alias} from ${TemplateSource.origin(installed.source.url, installed.source.sha)}`)
     console.log(`Templates: ${installed.templates.join(', ') || 'none'}`)
+    console.log(`Features: ${installed.features.join(', ') || 'none'}`)
 
-    for (const name of installed.conflicts)
-        console.log(`\n${name} is provided by ${registry.providers(name).map((alias) => `${alias}/${name}`).join(' and ')}.\nUse a full name, or choose which one ${name} means: gstudio use template ${name} ${installed.alias}/${name}`)
+    for (const kind of TemplateRegistry.KINDS)
+        for (const name of installed.conflicts[kind])
+            console.log(`\nThe ${kind} ${name} is provided by ${registry.providers(kind, name).map((alias) => `${alias}/${name}`).join(' and ')}.\nUse a full name, or choose which one ${name} means: gstudio use ${kind} ${name} ${installed.alias}/${name}`)
 }

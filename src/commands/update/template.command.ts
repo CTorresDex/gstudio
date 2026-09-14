@@ -9,11 +9,13 @@ export default async function (args: string[], context: { flags: Record<string, 
 
     console.log(updated.sha === null ? `Re-read ${args[0]} (linked)` : `Updated ${args[0]} to ${TemplateSource.commit(updated.sha)}`)
 
-    if (updated.added.length > 0) console.log(`Added: ${updated.added.join(', ')}`)
-    if (updated.removed.length > 0) console.log(`Removed: ${updated.removed.join(', ')}`)
+    for (const kind of TemplateRegistry.KINDS) {
+        if (updated[kind].added.length > 0) console.log(`Added ${kind}s: ${updated[kind].added.join(', ')}`)
+        if (updated[kind].removed.length > 0) console.log(`Removed ${kind}s: ${updated[kind].removed.join(', ')}`)
 
-    for (const name of updated.conflicts)
-        console.log(`\n${args[0]} now also provides ${name}, which ${registry.providers(name).filter((alias) => alias !== args[0]).join(' and ')} already provides.\nUse a full name, or choose which one ${name} means: gstudio use template ${name} ${args[0]}/${name}`)
+        for (const name of updated[kind].conflicts)
+            console.log(`\n${args[0]} now also provides the ${kind} ${name}, which ${registry.providers(kind, name).filter((alias) => alias !== args[0]).join(' and ')} already provides.\nUse a full name, or choose which one ${name} means: gstudio use ${kind} ${name} ${args[0]}/${name}`)
 
-    for (const name of updated.dangling) console.log(`\n${name} no longer exists in ${args[0]}, so the name ${name} no longer points anywhere.`)
+        for (const name of updated[kind].dangling) console.log(`\nThe ${kind} ${name} no longer exists in ${args[0]}, so the name ${name} no longer points anywhere.`)
+    }
 }

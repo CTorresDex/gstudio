@@ -5,7 +5,7 @@ export default async function (args: string[], context: { flags: Record<string, 
 
     const registry = await TemplateRegistry.load()
 
-    await registry.use(args[0], args[1])
+    await registry.use('template', args[0], args[1])
 
-    console.log(`${args[0]} now means ${args[1]}`)
+    console.log(`The template ${args[0]} now means ${args[1]}`)
 }

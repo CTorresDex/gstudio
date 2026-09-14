@@ -11,6 +11,6 @@ export default async function (args: string[], context: { flags: Record<string, 
         console.log(`${alias}  ${registry.sources[alias]!.url}  ${registry.sources[alias]!.sha === null ? 'linked' : `${registry.sources[alias]!.ref ?? 'HEAD'} at ${TemplateSource.commit(registry.sources[alias]!.sha)}`}`)
 
         for (const name of registry.sources[alias]!.templates)
-            console.log(`  ${alias}/${name}${registry.providers(name).length > 1 ? registry.shortcuts[name] === `${alias}/${name}` ? `  (${name})` : '  (ambiguous)' : `  (${name})`}`)
+            console.log(`  ${alias}/${name}${registry.providers('template', name).length > 1 ? registry.shortcuts.template[name] === `${alias}/${name}` ? `  (${name})` : '  (ambiguous)' : `  (${name})`}`)
     }
 }

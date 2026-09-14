@@ -16,7 +16,7 @@ export default async function (args: string[], context: { flags: Record<string, 
     }
 
     const reference = TemplateRef.parse(args[0])
-    const resolved = reference.kind === 'url' ? null : (await TemplateRegistry.load()).resolve(reference)
+    const resolved = reference.kind === 'url' ? null : (await TemplateRegistry.load()).resolve('template', reference)
     const source = await TemplateSource.fetch(resolved?.url ?? reference.url!, reference.ref ?? resolved?.ref ?? null, { refresh: context.flags.refresh === true })
     const template = await Template.read(source, resolved?.name ?? null)
     const initialized = await template.init(process.cwd(), { force: context.flags.force === true, install: context.flags['no-install'] !== true })

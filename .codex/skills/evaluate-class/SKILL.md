@@ -27,6 +27,6 @@ export class {name (PascalCase)} {
 
 1. **llm** — Input: class name
 
-2. **deterministic** — Run .gstudio/artifacts/class/scripts/evaluate/step-2.sh <name> where <name> is the PascalCase class name to evaluate (e.g. `.gstudio/artifacts/class/scripts/evaluate/step-2.sh UserService`).
+2. **deterministic** — Run `.gstudio/artifacts/class/scripts/evaluate/step-2.sh <name>` where `<name>` is the PascalCase class name (matching its file at src/classes/<name>.class.ts) to evaluate.
 
 3. **llm** — Ensure that the functions defined in the class are only from the scope of the class, any general purpose utility function must be defined at the respective utils class called by the name of the type (StringUtils, FunctionUtils, NumberUtils, etc...)

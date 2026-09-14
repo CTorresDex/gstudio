@@ -60,7 +60,7 @@ export class {name (PascalCase)} {
 <deterministic>
     Evaluate that:
 
-    1. The file has ONLY have one top level definition and must be a named export of a class.
+    1. The file has ONLY have one top level definition and must be a named export of a class. Only code declares a definition: imports, blank lines and comments — `//` lines as well as `/* */` blocks, including the doc comment above the class — are never definitions and are not counted.
 
     If it complies with all the rules, exits 0.
     Otherwise, iterate over each discrepancy, print them to stdout and exit with 1.

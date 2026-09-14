@@ -4,19 +4,26 @@ import { join } from 'node:path'
 import { TemplateRef } from './TemplateRef.class.ts'
 
 /**
- * A repository holding templates, fetched with git and kept in a content cache. A source is either
- * one template — a `template.json` at its root — or a catalog — a `templates.json` saying where its
- * templates live, each of them a directory with its own `template.json`.
+ * A repository holding templates and features, fetched with git and kept in a content cache. A source
+ * is either one thing — a `template.json` or a `feature.json` at its root — or a catalog — a
+ * `gstudio.json` saying where its templates and features live, each of them a directory with its own
+ * manifest. Where a template or feature sits in the repository is the author's business: the catalog
+ * names the directories, and everything is addressed by the name in its manifest.
  */
 export class TemplateSource {
     /** Where fetched repositories are kept, keyed by repository and commit so a hit needs no network. */
-    static readonly CACHE = join(homedir(), '.gstudio', 'cache')
+    static readonly CACHE = join(process.env.GSTUDIO_HOME ?? join(homedir(), '.gstudio'), 'cache')
+    /** The two kinds of thing a source provides: what makes a directory one, and where a catalog lists them. */
+    static readonly KINDS = {
+        template: { manifest: 'template.json', key: 'templates', defaults: ['templates/*'] },
+        feature: { manifest: 'feature.json', key: 'features', defaults: ['features/*'] },
+    } as const
     /** The manifest that makes a directory a template. */
-    static readonly MANIFEST = 'template.json'
-    /** The manifest that makes a repository a catalog of templates. */
-    static readonly CATALOG = 'templates.json'
-    /** Where a catalog's templates live when it does not say otherwise. */
-    static readonly DEFAULT_TEMPLATES = ['templates/*']
+    static readonly MANIFEST = TemplateSource.KINDS.template.manifest
+    /** The manifest that makes a repository a catalog. */
+    static readonly CATALOG = 'gstudio.json'
+    /** What the catalog was called when it could only list templates. Still read, never written. */
+    static readonly LEGACY_CATALOG = 'templates.json'
 
     private constructor(
         /** The repository, normalized: the identity two spellings of the same URL share. */
@@ -60,8 +67,8 @@ export class TemplateSource {
 
         const source = new TemplateSource(path, null, null, path, true)
 
-        if (!(await source.single()) && !(await Bun.file(join(path, TemplateSource.CATALOG)).exists()))
-            throw new Error(`${path} is not a template: it has neither ${TemplateSource.MANIFEST} nor ${TemplateSource.CATALOG}`)
+        if (!(await source.single('template')) && !(await source.single('feature')) && (await source.catalog()) === null)
+            throw new Error(`${path} is not a source: it has no ${TemplateSource.MANIFEST}, ${TemplateSource.KINDS.feature.manifest} or ${TemplateSource.CATALOG}`)
 
         return source
     }
@@ -112,43 +119,73 @@ export class TemplateSource {
         return sha === null ? `${url} (linked)` : `${url} at ${sha.slice(0, 7)}`
     }
 
-    /** Whether this source is one template rather than a catalog of them. */
-    async single(): Promise<boolean> {
-        return await Bun.file(join(this.path, TemplateSource.MANIFEST)).exists()
+    /** Whether this source is one template, or one feature, rather than a catalog of them. */
+    async single(kind: keyof typeof TemplateSource.KINDS): Promise<boolean> {
+        return await Bun.file(join(this.path, TemplateSource.KINDS[kind].manifest)).exists()
+    }
+
+    /** Every template the source provides, by name. */
+    async templates(): Promise<Map<string, string>> {
+        return await this.index('template')
+    }
+
+    /** Every feature the source provides, by name. */
+    async features(): Promise<Map<string, string>> {
+        return await this.index('feature')
     }
 
     /**
-     * Every template the source provides, by name. The name is always the one in `template.json`:
-     * a directory is where a template sits, never what it is called.
+     * Everything of one kind the source provides, by name. The name is always the one in the manifest:
+     * a directory is where a thing sits, never what it is called.
      */
-    async templates(): Promise<Map<string, string>> {
+    private async index(kind: keyof typeof TemplateSource.KINDS): Promise<Map<string, string>> {
+        const { manifest } = TemplateSource.KINDS[kind]
         const found = new Map<string, string>()
 
-        for (const path of await this.directories()) {
-            const manifest = await Bun.file(join(path, TemplateSource.MANIFEST)).json().catch(() => null)
+        for (const path of await this.directories(kind)) {
+            const data = await Bun.file(join(path, manifest)).json().catch(() => null)
+            const where = path.slice(this.path.length + 1) || '.'
 
-            if (manifest === null) throw new Error(`${path.slice(this.path.length + 1) || '.'} has no readable ${TemplateSource.MANIFEST}`)
-            if (typeof manifest.name !== 'string' || manifest.name === '') throw new Error(`${path.slice(this.path.length + 1) || '.'}/${TemplateSource.MANIFEST} must name the template`)
+            if (data === null) throw new Error(`${where} has no readable ${manifest}`)
+            if (typeof data.name !== 'string' || data.name === '') throw new Error(`${where}/${manifest} must name the ${kind}`)
 
-            const existing = found.get(manifest.name)
+            const existing = found.get(data.name)
 
-            if (existing !== undefined) throw new Error(`${this.url} defines the template ${manifest.name} twice, at ${existing.slice(this.path.length + 1)} and at ${path.slice(this.path.length + 1)}`)
+            if (existing !== undefined) throw new Error(`${this.url} defines the ${kind} ${data.name} twice, at ${existing.slice(this.path.length + 1)} and at ${where}`)
 
-            found.set(manifest.name, path)
+            found.set(data.name, path)
         }
 
         return found
     }
 
-    /** The directories the source says hold its templates. */
-    private async directories(): Promise<string[]> {
-        if (await this.single()) return [this.path]
+    /** The catalog, whichever name it goes by, or null when the source has none. */
+    private async catalog(): Promise<Record<string, unknown> | null> {
+        for (const name of [TemplateSource.CATALOG, TemplateSource.LEGACY_CATALOG]) {
+            const data = await Bun.file(join(this.path, name)).json().catch(() => null)
 
-        const catalog = await Bun.file(join(this.path, TemplateSource.CATALOG)).json().catch(() => null)
+            if (data !== null) return data
+        }
 
-        if (catalog === null) throw new Error(`${this.url} is not a template: it has neither ${TemplateSource.MANIFEST} nor ${TemplateSource.CATALOG} at its root`)
+        return null
+    }
 
-        const patterns: string[] = Array.isArray(catalog.templates) && catalog.templates.length > 0 ? catalog.templates : TemplateSource.DEFAULT_TEMPLATES
+    /** The directories the source says hold its things of one kind. */
+    private async directories(kind: keyof typeof TemplateSource.KINDS): Promise<string[]> {
+        if (await this.single(kind)) return [this.path]
+
+        const catalog = await this.catalog()
+
+        if (catalog === null) {
+            const other = kind === 'template' ? 'feature' : 'template'
+
+            if (await this.single(other)) return []
+
+            throw new Error(`${this.url} is not a source: it has no ${TemplateSource.MANIFEST}, ${TemplateSource.KINDS.feature.manifest} or ${TemplateSource.CATALOG} at its root`)
+        }
+
+        const listed = catalog[TemplateSource.KINDS[kind].key]
+        const patterns: readonly string[] = Array.isArray(listed) && listed.length > 0 ? listed : TemplateSource.KINDS[kind].defaults
         const directories: string[] = []
 
         for (const pattern of patterns) directories.push(...(await this.expand(pattern)))
