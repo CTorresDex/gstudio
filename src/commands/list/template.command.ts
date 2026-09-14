@@ -1,6 +1,17 @@
 import { TemplateSource } from '../../classes/TemplateSource.class.ts'
 import { TemplateRegistry } from '../../classes/TemplateRegistry.class.ts'
 
+export const help = {
+    short: 'Lists every installed source and the templates it provides',
+    long: `Usage: gstudio list template [<search-term>]
+
+Prints every source in the registry, where it came from and what it is read at,
+then the templates it provides and which name each answers to.
+
+Arguments:
+  <search-term>  keep only the sources and templates whose name contains it`,
+}
+
 export default async function (args: string[], context: { flags: Record<string, string | boolean> }) {
     const registry = await TemplateRegistry.load()
     const aliases = Object.keys(registry.sources).filter((alias) => args[0] === undefined || alias.includes(args[0]) || registry.sources[alias]!.templates.some((name) => name.includes(args[0]!))).sort()

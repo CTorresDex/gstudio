@@ -1,11 +1,25 @@
 ID: path
 
 1. ALL Commands are defined at src/commands/{path}.command.ts, where {path} is slash separated and is substituted verbatim into that location: the `create artifact` command has the path create/artifact and is defined at src/commands/create/artifact.command.ts
-2. The file must ONLY have one top level definition, the anonymous default exported command function, and must follow the following template:
-3. A command only reads its input from args and context.flags, delegates every decision to the classes at src/classes and prints the outcome: no types, no helper functions and no variables are defined at the top level of the file
-4. Every script receives {path} as a single first argument, written exactly as it appears in the file location (create/artifact), never split into separate words and never needing quotes
+2. The file must have EXACTLY two top level definitions, in this order: the named `help` const export and the anonymous default exported command function, and must follow the following template
+3. `help.short` is a single line without a trailing period, shown for the command in the general listing printed by `gstudio help` and by `gstudio` with no arguments; `help.long` is a multi-line string shown by `gstudio help {path}`, opening with the usage line `Usage: gstudio {path} <args> [--flags]`, then what the command does, its arguments and its flags
+4. A command only reads its input from args and context.flags, delegates every decision to the classes at src/classes and prints the outcome: no types, no helper functions and no variables other than `help` are defined at the top level of the file
+5. Every script receives {path} as a single first argument, written exactly as it appears in the file location (create/artifact), never split into separate words and never needing quotes
 
 ```ts
+export const help = {
+    short: 'What the command does, in one line',
+    long: `Usage: gstudio {path} <args> [--flags]
+
+What the command does.
+
+Arguments:
+  <args>     what it is
+
+Flags:
+  --flag     what it does`,
+}
+
 export default async function (args: string[], context: { flags: Record<string, string | boolean> }) {
     // command definition
 }
@@ -61,11 +75,12 @@ export default async function (args: string[], context: { flags: Record<string, 
 <deterministic>
     Evaluate that:
 
-    1. The file has ONLY have one top level definition and must be the anonymous default export of an async function taking the arguments of the template at the rules.
+    1. The file has EXACTLY two top level definitions and no others: a named `export const help` object literal with a `short` string property and a `long` string property, followed by the anonymous default export of an async function taking the arguments of the template at the rules.
 
     If it complies with all the rules, exits 0.
     Otherwise, iterate over each discrepancy, print them to stdout and exit with 1.
 </deterministic>
 <llm>
     Ensure that the command only reads its input from args and context.flags, delegates every decision to the classes at src/classes and prints the outcome.
+    Ensure as well that help.short is a single descriptive line and that help.long opens with the usage line and documents the arguments the command reads from args and every flag it reads from context.flags.
 </llm>

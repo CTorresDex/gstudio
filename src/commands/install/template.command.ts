@@ -1,6 +1,23 @@
 import { TemplateSource } from '../../classes/TemplateSource.class.ts'
 import { TemplateRegistry } from '../../classes/TemplateRegistry.class.ts'
 
+export const help = {
+    short: 'Indexes a source: the templates and the features it provides',
+    long: `Usage: gstudio install template <git-url> [--as <alias>] [--ref <ref>] [--refresh]
+
+Reads the source's catalog and registers everything it provides under an alias,
+so it can be addressed as <alias>/<name>, or by a bare name while only one source
+provides it.
+
+Arguments:
+  <git-url>    the repository, or a directory on this machine
+
+Flags:
+  --as         the alias to register the source under
+  --ref        the branch, tag or commit to read it at
+  --refresh    re-fetch the source instead of reusing the cached clone`,
+}
+
 export default async function (args: string[], context: { flags: Record<string, string | boolean> }) {
     if (args[0] === undefined) throw new Error('Usage: gstudio install template <git-url> [--as <alias>] [--ref <ref>] [--refresh]')
 

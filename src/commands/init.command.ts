@@ -5,6 +5,22 @@ import { TemplateRef } from '../classes/TemplateRef.class.ts'
 import { TemplateRegistry } from '../classes/TemplateRegistry.class.ts'
 import { TemplateSource } from '../classes/TemplateSource.class.ts'
 
+export const help = {
+    short: 'Lays a template down here, or scaffolds .gstudio when given no template',
+    long: `Usage: gstudio init [<template>] [--force] [--no-install] [--refresh]
+
+With no template, creates .gstudio/artifacts so this project can define its own
+artifacts. With one, lays that template down in the current directory.
+
+Arguments:
+  <template>   the template, as a bare name, as <alias>/<name>, or as a git url
+
+Flags:
+  --force      write over files that already exist
+  --no-install do not run the template's install step
+  --refresh    re-fetch the source instead of reusing the cached clone`,
+}
+
 export default async function (args: string[], context: { flags: Record<string, string | boolean> }) {
     if (args[0] === undefined) {
         await mkdir(`${process.cwd()}/${Artifact.ROOT}`, { recursive: true })

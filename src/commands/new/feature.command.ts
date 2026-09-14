@@ -1,6 +1,20 @@
 import { join } from 'node:path'
 import { Feature } from '../../classes/Feature.class.ts'
 
+export const help = {
+    short: 'Scaffolds a feature, ready to be written and compiled',
+    long: `Usage: gstudio new feature <name> [--at <directory>]
+
+Writes the manifest, the definition, and the directories a feature travels with:
+scaffolding/ for the files it lays over a project, artifacts/ for what it brings.
+
+Arguments:
+  <name>       the name the feature is addressed by
+
+Flags:
+  --at         where to create it, instead of the current directory`,
+}
+
 export default async function (args: string[], context: { flags: Record<string, string | boolean> }) {
     if (args[0] === undefined) throw new Error('Usage: gstudio new feature <name> [--at <directory>]')
 

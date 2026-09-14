@@ -1,6 +1,20 @@
 import { TemplateSource } from '../../classes/TemplateSource.class.ts'
 import { TemplateRegistry } from '../../classes/TemplateRegistry.class.ts'
 
+export const help = {
+    short: 'Re-reads a source and reports what it now provides',
+    long: `Usage: gstudio update template <alias> [--ref <ref>]
+
+Fetches the source again and reconciles the registry with it: what it added, what
+it dropped, what names two sources now claim.
+
+Arguments:
+  <alias>      the alias the source was installed under
+
+Flags:
+  --ref        the branch, tag or commit to read it at from now on`,
+}
+
 export default async function (args: string[], context: { flags: Record<string, string | boolean> }) {
     if (args[0] === undefined) throw new Error('Usage: gstudio update template <alias> [--ref <ref>]')
 

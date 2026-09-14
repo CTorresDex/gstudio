@@ -2,6 +2,21 @@ import { Agent } from '../../classes/Agent.class.ts'
 import { FeatureInstaller } from '../../classes/FeatureInstaller.class.ts'
 import { TemplateSource } from '../../classes/TemplateSource.class.ts'
 
+export const help = {
+    short: 'Brings a feature to what its source now says',
+    long: `Usage: gstudio update feature <name> [--model <model>] [--effort <effort>]
+
+Replaces what is untouched, reconciles what you edited, leaves what you deleted
+deleted, and reports every file upstream and you both changed.
+
+Arguments:
+  <name>       the feature, as this project records it
+
+Flags:
+  --model      the model the install steps run on
+  --effort     the reasoning effort they run at`,
+}
+
 export default async function (args: string[], context: { flags: Record<string, string | boolean> }) {
     if (args[0] === undefined) throw new Error('Usage: gstudio update feature <name> [--model <model>] [--effort <effort>]')
 

@@ -1,6 +1,23 @@
 import { Agent } from '../../classes/Agent.class.ts'
 import { FeatureInstaller } from '../../classes/FeatureInstaller.class.ts'
 
+export const help = {
+    short: 'Puts a feature, and what it requires, into this project',
+    long: `Usage: gstudio add feature <name | alias/name | git-url> [--refresh] [--model <model>] [--effort <effort>]
+
+Closes the graph of what the feature requires, checks every file and artifact it
+would write for a collision, and only then writes anything. What it wrote is
+recorded in .gstudio/project.json, with a hash per file.
+
+Arguments:
+  <name>       the feature, as a bare name, as <alias>/<name>, or as a git url
+
+Flags:
+  --refresh    re-fetch the source instead of reusing the cached clone
+  --model      the model the llm steps run on
+  --effort     the reasoning effort the llm steps run at`,
+}
+
 export default async function (args: string[], context: { flags: Record<string, string | boolean> }) {
     if (args[0] === undefined) throw new Error('Usage: gstudio add feature <name | alias/name | git-url> [--refresh] [--model <model>] [--effort <effort>]')
 

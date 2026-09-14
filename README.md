@@ -6,10 +6,15 @@ An artifact is one document — `.gstudio/artifacts/<name>/artifact.md` — hold
 file and the actions that operate on it. Read one to learn the format; they are the source of truth.
 
 ```bash
-bun run index.ts                          # every command there is
+bun run index.ts                          # every command there is, with the line each describes itself by
+bun run index.ts help <command>           # that one command in full: usage, arguments, flags
 bun run index.ts init                     # scaffold .gstudio/artifacts
 bun run index.ts compile artifact <name>  # compile one artifact into .claude/ and .codex/ skills
 ```
+
+Every command documents itself: the `command` artifact makes a `help` export — `short` for the listing,
+`long` for the detailed view — as much a part of a command as the function it runs, so `gstudio help`
+is written by the commands themselves and never drifts from them.
 
 Compiling writes a script per deterministic step and a skill per action. It shells out to the `claude`
 CLI to write a script, so it is incremental: `compiled.json` keys every step by hash, and only what

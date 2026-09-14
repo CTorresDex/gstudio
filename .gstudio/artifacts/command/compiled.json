@@ -1,50 +1,50 @@
 {
     "steps": {
         ".gstudio/artifacts/command/scripts/create/step-2.sh": {
-            "hash": "672cf09fdb7df730cb7b20c90fe6acb43f793ee1f072d410e27d3d043d920c83",
-            "instruction": "Run {{script}} <path> [content] where <path> is the command's slash-separated path (e.g. create/artifact) and content is an optional string with the command body."
+            "hash": "45cd633618d61364eff8b2abb519d3d6a144a818a6ba2845a35af50b2830ed33",
+            "instruction": "Run {{script}} <path> where <path> is the slash-separated command path (e.g. create/artifact), written exactly as it appears in the file location."
         },
         ".gstudio/artifacts/command/scripts/list/step-2.sh": {
-            "hash": "65ff634c6b0a32f73e7b76ce9065f5c6d770c0a4f460d61fd102fd32129688de",
-            "instruction": "Run {{script}} [search_term] to list commands, optionally filtering to those whose command path or file path contains the given search term."
+            "hash": "67d6f58d400d1214a67496bff308b52fe8ea461c5cfe424fa24cfaf94cf9a66d",
+            "instruction": "Run {{script}} [search term] with an optional search term argument to filter the listed commands by path."
         },
         ".gstudio/artifacts/command/scripts/update/step-2.sh": {
-            "hash": "11dcd1fc4633997243bf0c913aa5dd4f741fcf465fc12505f976875312dc421d",
-            "instruction": "Run {{script}} <command-path> <change-request>, where <command-path> is the slash-separated command path (e.g. create/artifact)."
+            "hash": "8c960ac28ab83e4b0e0056a3b2fe5a270bfa63990962c5654ce7fabdd443fe75",
+            "instruction": "Run {{script}} <command-path> to verify the command file exists before applying the update, exiting non-zero with an error if it does not."
         },
         ".gstudio/artifacts/command/scripts/delete/step-2.sh": {
-            "hash": "06561e3cc250469781b967985b0485a251c2016b518ef88501cfab8e44143654",
-            "instruction": "Run {{script}} <path> where <path> is the slash-separated command path (e.g. create/artifact)."
+            "hash": "3cc48dfa3d889b3f483475721ecceed10fe56dceafa8013f9a99cb37f4b116ce",
+            "instruction": "Run {{script}} <path> where <path> is the command path exactly as it appears in the file location (e.g. create/artifact)."
         },
         ".gstudio/artifacts/command/scripts/delete/step-3.sh": {
-            "hash": "2868f71efcb80552ff0cb8d50473c22342d592bf8223c715eb55affd14f32750",
-            "instruction": "Run {{script}} <path> where <path> is the command's slash-separated path (e.g. create/artifact) to list every file:line reference to that command found in the codebase."
+            "hash": "204089bf216d771c17e23b5d53f7bd6c4b59e27b61ae356f017d6e4484ac52ae",
+            "instruction": "Run {{script}} <path> where <path> is the command's path exactly as it appears in its file location (e.g. create/artifact)."
         },
         ".gstudio/artifacts/command/scripts/evaluate/step-2.sh": {
-            "hash": "40a509057debd6e5a8556ca6e330b7e6832341adad6955c51146599b5b3fe051",
-            "instruction": "Run {{script}} <path> (e.g. `{{script}} create/artifact`), where `<path>` is the command's path exactly as it appears in its file location."
+            "hash": "bd6ac461716359ec66fe4538353734c32d4081f4d64be397c63cfb4110433ef6",
+            "instruction": "Run {{script}} <path>, where <path> is the command's slash-separated path exactly as it appears in its file location (e.g. create/artifact)."
         }
     },
     "descriptions": {
         "create": {
-            "hash": "d0c4a2f35b44aea324d75a72a56ffb812ee599f72a12f2c2e447bbe47034757a",
-            "text": "Scaffolds a new command file at src/commands/{path}.command.ts with an empty or given body, exiting 1 if the file already exists."
+            "hash": "74d7a57a67461ee85020cbc205abe41f4d799da2c0d8f029d4671dee65d13be4",
+            "text": "Scaffolds a new command file at src/commands/{path}.command.ts, given the path, exiting 1 if the file already exists."
         },
         "list": {
-            "hash": "891761fdcc7d3d0ffb87bd1e9d87e63412481ac9a2faa23b161ab2637f2309a1",
-            "text": "Lists all commands in src/commands matching an optional search term, printing each as \"command path: file path\""
+            "hash": "0a0ca7e67a5042a2736ff2f78fadf990f513a465082c82bac32f845a29b8b9f1",
+            "text": "Lists commands in src/commands matching an optional search term and prints each as command path plus file path."
         },
         "update": {
-            "hash": "2b2eefb3a65b3ddecc23b8b4aa0fee2393c9545a7a8abb722f3d5afdd1fa5783",
-            "text": "Applies a natural-language change request to an existing command file at src/commands, given the command path and a description of the change, failing if the command file does not exist"
+            "hash": "e05cea37204ef09ddb580c368b06a492d00c46d393fc835d4165c630df71b997",
+            "text": "Applies a natural-language change request to an existing command file at src/commands, given the command path and the change description, failing if the command file does not exist"
         },
         "delete": {
-            "hash": "182f1e275d8824e02ce85dbf282ff4d95174147362378df1dfd2a9e79f308be4",
-            "text": "Deletes a command's file at src/commands given its path, then finds and removes all dangling references to it in the codebase."
+            "hash": "9b512ddbadb9225c699fff722dfd2d8e49c57d0c55b2dd79ebc6688acd85e0a3",
+            "text": "Deletes a command's file given its path, then finds and removes all dangling references to it in the codebase"
         },
         "evaluate": {
-            "hash": "78a819912028b775a39ef4ed087b39cc4224fc1c46ab9abaeb43a0b193cc40ec",
-            "text": "Checks that a command file has exactly one top-level default-exported async function reading only args and context.flags and delegating all logic to src/classes, given the command path."
+            "hash": "3855ddf3ef4ae5bbee4fc42814fe0a16330a08afd1c696105f5826387d03d610",
+            "text": "Checks that a command file has exactly the required help and default-export structure and delegates all logic to classes, given the command path as input."
         }
     }
 }

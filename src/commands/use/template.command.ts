@@ -1,5 +1,17 @@
 import { TemplateRegistry } from '../../classes/TemplateRegistry.class.ts'
 
+export const help = {
+    short: 'Chooses which source a bare template name means',
+    long: `Usage: gstudio use template <name> <alias>/<name>
+
+Points a bare name at one provider, for when more than one source provides a
+template under the same name.
+
+Arguments:
+  <name>           the bare name being decided
+  <alias>/<name>   the provider it means from now on`,
+}
+
 export default async function (args: string[], context: { flags: Record<string, string | boolean> }) {
     if (args[0] === undefined || args[1] === undefined) throw new Error('Usage: gstudio use template <name> <alias>/<name>')
 

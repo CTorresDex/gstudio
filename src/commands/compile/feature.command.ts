@@ -4,6 +4,21 @@ import { Agent } from '../../classes/Agent.class.ts'
 import { Feature } from '../../classes/Feature.class.ts'
 import { TemplateSource } from '../../classes/TemplateSource.class.ts'
 
+export const help = {
+    short: 'Compiles a feature where it is written, so installing it costs no llm call',
+    long: `Usage: gstudio compile feature <name | directory> [--model <model>] [--effort <effort>]
+
+Compiles the feature's own steps and every artifact it brings, so the scripts and
+skill descriptions travel with it.
+
+Arguments:
+  <name>       the feature named by a manifest in this source, or a directory holding one
+
+Flags:
+  --model      the model the compiler writes scripts with
+  --effort     the reasoning effort it writes them at`,
+}
+
 export default async function (args: string[], context: { flags: Record<string, string | boolean> }) {
     if (args[0] === undefined) throw new Error('Usage: gstudio compile feature <name | directory> [--model <model>] [--effort <effort>]')
 

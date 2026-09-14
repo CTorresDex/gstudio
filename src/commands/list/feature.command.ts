@@ -2,6 +2,17 @@ import { Ledger } from '../../classes/Ledger.class.ts'
 import { TemplateSource } from '../../classes/TemplateSource.class.ts'
 import { TemplateRegistry } from '../../classes/TemplateRegistry.class.ts'
 
+export const help = {
+    short: 'Lists the features installed here and the ones sources provide',
+    long: `Usage: gstudio list feature [<search-term>]
+
+Prints what this project has installed, with what required it, then every source
+that provides features and what each one offers.
+
+Arguments:
+  <search-term>  keep only the sources and features whose name contains it`,
+}
+
 export default async function (args: string[], context: { flags: Record<string, string | boolean> }) {
     const registry = await TemplateRegistry.load()
     const ledger = await Ledger.load(process.cwd())
