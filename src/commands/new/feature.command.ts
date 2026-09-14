@@ -1,5 +1,6 @@
 import { join } from 'node:path'
 import { Feature } from '../../classes/Feature.class.ts'
+import { Progress } from '../../classes/Progress.class.ts'
 
 export const help = {
     short: 'Scaffolds a feature, ready to be written and compiled',
@@ -18,7 +19,7 @@ Flags:
 export default async function (args: string[], context: { flags: Record<string, string | boolean> }) {
     if (args[0] === undefined) throw new Error('Usage: gstudio new feature <name> [--at <directory>]')
 
-    const target = await Feature.scaffold(args[0], join(typeof context.flags.at === 'string' ? context.flags.at : process.cwd(), args[0]))
+    const target = await Progress.of(`Creating the feature ${args[0]}`).run(() => Feature.scaffold(args[0]!, join(typeof context.flags.at === 'string' ? context.flags.at : process.cwd(), args[0]!)))
 
     console.log(`Created ${target}`)
     console.log(`Say what the feature requires, how it installs and how it uninstalls in ${target}/${Feature.DEFINITION}`)

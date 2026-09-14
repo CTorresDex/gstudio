@@ -18,8 +18,11 @@ ID: path
 3. `help.short` is a single line without a trailing period, shown for the command in the general listing printed by `gstudio help` and by `gstudio` with no arguments; `help.long` is a multi-line string shown by `gstudio help {path}`, opening with the usage line `Usage: gstudio {path} <args> [--flags]`, then what the command does, its arguments and its flags
 4. A command only reads its input from args and context.flags, delegates every decision to the classes at src/classes and prints the outcome: no types, no helper functions and no variables other than `help` are defined at the top level of the file
 5. Every script receives {path} as a single first argument, written exactly as it appears in the file location (create/artifact), never split into separate words and never needing quotes
+6. A command that waits says what it is waiting for: every `await` in the body sits inside `Progress.of('{label}').run(() => ...)`, where {label} names the work in progress and its subject, as a string or a template literal naming what it is working on (`Reading the registry`, `Fetching ${args[0]}`, `Adding the feature ${args[0]}`). Work that moves on, or has something to report as it goes, is handed the indicator: `progress.say('...')` changes what it is waiting on, `progress.log(line)` prints a finished line above the animation. `Progress` is imported from src/classes/Progress.class.ts, relative to the command file as every other class is. It animates on stderr and erases itself when the work settles, so stdout carries the outcome alone and stays as readable to a script as it is to a person
 
 ```ts
+import { Progress } from '{relative path back to src}/classes/Progress.class.ts'
+
 export const help = {
     short: 'What the command does, in one line',
     long: `Usage: gstudio {path} <args> [--flags]
@@ -34,6 +37,8 @@ Flags:
 }
 
 export default async function (args: string[], context: { flags: Record<string, string | boolean> }) {
+    const outcome = await Progress.of('{label}').run(() => Klass.work(args[0]))
+
     // command definition
 }
 ```
@@ -42,6 +47,6 @@ export default async function (args: string[], context: { flags: Record<string, 
 
 1. **llm** — Input (Optional): search term
 
-2. **deterministic** — Run .gstudio/artifacts/command/scripts/list/step-2.sh [search term] with an optional search term argument to filter the listed commands by path.
+2. **deterministic** — Run .gstudio/artifacts/command/scripts/list/step-2.sh [search term] to list commands, optionally filtered to those whose command path contains the given search term.
 
 3. **llm** — Report the results of the previous command.

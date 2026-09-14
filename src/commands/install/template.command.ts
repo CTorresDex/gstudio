@@ -1,5 +1,6 @@
 import { TemplateSource } from '../../classes/TemplateSource.class.ts'
 import { TemplateRegistry } from '../../classes/TemplateRegistry.class.ts'
+import { Progress } from '../../classes/Progress.class.ts'
 
 export const help = {
     short: 'Indexes a source: the templates and the features it provides',
@@ -21,11 +22,19 @@ Flags:
 export default async function (args: string[], context: { flags: Record<string, string | boolean> }) {
     if (args[0] === undefined) throw new Error('Usage: gstudio install template <git-url> [--as <alias>] [--ref <ref>] [--refresh]')
 
-    const registry = await TemplateRegistry.load()
-    const installed = await registry.install(args[0], {
-        as: typeof context.flags.as === 'string' ? context.flags.as : null,
-        ref: typeof context.flags.ref === 'string' ? context.flags.ref : null,
-        refresh: context.flags.refresh === true,
+    const { registry, installed } = await Progress.of('Reading the registry').run(async (progress) => {
+        const registry = await TemplateRegistry.load()
+
+        progress.say(`Fetching ${args[0]} and reading its catalog`)
+
+        return {
+            registry,
+            installed: await registry.install(args[0]!, {
+                as: typeof context.flags.as === 'string' ? context.flags.as : null,
+                ref: typeof context.flags.ref === 'string' ? context.flags.ref : null,
+                refresh: context.flags.refresh === true,
+            }),
+        }
     })
 
     console.log(`Installed ${installed.alias} from ${TemplateSource.origin(installed.source.url, installed.source.sha)}`)

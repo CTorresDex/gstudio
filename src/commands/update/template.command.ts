@@ -1,5 +1,6 @@
 import { TemplateSource } from '../../classes/TemplateSource.class.ts'
 import { TemplateRegistry } from '../../classes/TemplateRegistry.class.ts'
+import { Progress } from '../../classes/Progress.class.ts'
 
 export const help = {
     short: 'Re-reads a source and reports what it now provides',
@@ -18,8 +19,13 @@ Flags:
 export default async function (args: string[], context: { flags: Record<string, string | boolean> }) {
     if (args[0] === undefined) throw new Error('Usage: gstudio update template <alias> [--ref <ref>]')
 
-    const registry = await TemplateRegistry.load()
-    const updated = await registry.update(args[0], { ref: typeof context.flags.ref === 'string' ? context.flags.ref : null })
+    const { registry, updated } = await Progress.of('Reading the registry').run(async (progress) => {
+        const registry = await TemplateRegistry.load()
+
+        progress.say(`Re-fetching ${args[0]} and reconciling what it provides`)
+
+        return { registry, updated: await registry.update(args[0]!, { ref: typeof context.flags.ref === 'string' ? context.flags.ref : null }) }
+    })
 
     console.log(updated.sha === null ? `Re-read ${args[0]} (linked)` : `Updated ${args[0]} to ${TemplateSource.commit(updated.sha)}`)
 

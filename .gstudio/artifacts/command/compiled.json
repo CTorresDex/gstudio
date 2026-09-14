@@ -1,49 +1,49 @@
 {
     "steps": {
         ".gstudio/artifacts/command/scripts/create/step-2.sh": {
-            "hash": "45cd633618d61364eff8b2abb519d3d6a144a818a6ba2845a35af50b2830ed33",
-            "instruction": "Run {{script}} <path> where <path> is the slash-separated command path (e.g. create/artifact), written exactly as it appears in the file location."
+            "hash": "8e94e14ef7fcec27e3ee3be7e158c191a1f3e46beaeffa710554ce293cbb3746",
+            "instruction": "Run {{script}} <path> [content] where <path> is the slash-separated command path (e.g. create/artifact) and the optional [content] is the full file content to write instead of the default skeleton."
         },
         ".gstudio/artifacts/command/scripts/list/step-2.sh": {
-            "hash": "67d6f58d400d1214a67496bff308b52fe8ea461c5cfe424fa24cfaf94cf9a66d",
-            "instruction": "Run {{script}} [search term] with an optional search term argument to filter the listed commands by path."
+            "hash": "a02e93c844e00c4d30dd80c235b66761cba4b26ef8d4f43fe227bd59cc4e1e2f",
+            "instruction": "Run {{script}} [search term] to list commands, optionally filtered to those whose command path contains the given search term."
         },
         ".gstudio/artifacts/command/scripts/update/step-2.sh": {
-            "hash": "8c960ac28ab83e4b0e0056a3b2fe5a270bfa63990962c5654ce7fabdd443fe75",
-            "instruction": "Run {{script}} <command-path> to verify the command file exists before applying the update, exiting non-zero with an error if it does not."
+            "hash": "acc01e6b0833e2897b56d3e58be5328aff2dd951798ae8488a408d329d9d6d91",
+            "instruction": "Run {{script}} <command-path> <change-request>, where <command-path> is the slash-separated command path (e.g. create/artifact) and <change-request> is the natural-language description of the change."
         },
         ".gstudio/artifacts/command/scripts/delete/step-2.sh": {
-            "hash": "3cc48dfa3d889b3f483475721ecceed10fe56dceafa8013f9a99cb37f4b116ce",
-            "instruction": "Run {{script}} <path> where <path> is the command path exactly as it appears in the file location (e.g. create/artifact)."
+            "hash": "c4036d0c230af9c610fcc9f91651840dfa6b23d05b58bbbd48582eca0d9ba55b",
+            "instruction": "Run {{script}} <path> where <path> is the slash-separated command path (e.g. create/artifact)."
         },
         ".gstudio/artifacts/command/scripts/delete/step-3.sh": {
-            "hash": "204089bf216d771c17e23b5d53f7bd6c4b59e27b61ae356f017d6e4484ac52ae",
-            "instruction": "Run {{script}} <path> where <path> is the command's path exactly as it appears in its file location (e.g. create/artifact)."
+            "hash": "2e296f3d0d029f928e917345f56f9df16474180b660579ebb1a1d72dd47db97e",
+            "instruction": "Run {{script}} <command-path> where <command-path> is the slash-separated command path (e.g. create/artifact) to search the codebase for references to."
         },
         ".gstudio/artifacts/command/scripts/evaluate/step-2.sh": {
-            "hash": "bd6ac461716359ec66fe4538353734c32d4081f4d64be397c63cfb4110433ef6",
-            "instruction": "Run {{script}} <path>, where <path> is the command's slash-separated path exactly as it appears in its file location (e.g. create/artifact)."
+            "hash": "3a61b13284c5baa262ecfc02978c1c69f4d0485a2eff5a0b665404e607da4dda",
+            "instruction": "Run {{script}} <path> where <path> is the slash-separated command path (e.g. `create/artifact`), written verbatim and unquoted."
         }
     },
     "descriptions": {
         "create": {
-            "hash": "74d7a57a67461ee85020cbc205abe41f4d799da2c0d8f029d4671dee65d13be4",
+            "hash": "c77a02bcc9c070553997ebe5e6cabbffd7bd40e19e6059de545decb32fd2663b",
             "text": "Scaffolds a new command file at src/commands/{path}.command.ts, given the path, exiting 1 if the file already exists."
         },
         "list": {
-            "hash": "0a0ca7e67a5042a2736ff2f78fadf990f513a465082c82bac32f845a29b8b9f1",
+            "hash": "d643b2a702de9537c52e77221e7205f473d5ca362aaebe7f3c5fe7b47f042c62",
             "text": "Lists commands in src/commands matching an optional search term and prints each as command path plus file path."
         },
         "update": {
-            "hash": "e05cea37204ef09ddb580c368b06a492d00c46d393fc835d4165c630df71b997",
+            "hash": "8c4cc99b271799996ce5dc75f79aa8a0013ba1c07a0d1f4e427825068bfd1c24",
             "text": "Applies a natural-language change request to an existing command file at src/commands, given the command path and the change description, failing if the command file does not exist"
         },
         "delete": {
-            "hash": "9b512ddbadb9225c699fff722dfd2d8e49c57d0c55b2dd79ebc6688acd85e0a3",
+            "hash": "1436aba109b7ef21f5265d5829c8723a4745a20b178660a41226ba5bf6a6a8a6",
             "text": "Deletes a command's file given its path, then finds and removes all dangling references to it in the codebase"
         },
         "evaluate": {
-            "hash": "3855ddf3ef4ae5bbee4fc42814fe0a16330a08afd1c696105f5826387d03d610",
+            "hash": "88b76168b9fb7b82969e7ff124559146bab7130d3f7a816407bb53ab877c43c5",
             "text": "Checks that a command file has exactly the required help and default-export structure and delegates all logic to classes, given the command path as input."
         }
     }

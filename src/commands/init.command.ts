@@ -4,6 +4,7 @@ import { Template } from '../classes/Template.class.ts'
 import { TemplateRef } from '../classes/TemplateRef.class.ts'
 import { TemplateRegistry } from '../classes/TemplateRegistry.class.ts'
 import { TemplateSource } from '../classes/TemplateSource.class.ts'
+import { Progress } from '../classes/Progress.class.ts'
 
 export const help = {
     short: 'Lays a template down here, or scaffolds .gstudio when given no template',
@@ -23,7 +24,7 @@ Flags:
 
 export default async function (args: string[], context: { flags: Record<string, string | boolean> }) {
     if (args[0] === undefined) {
-        await mkdir(`${process.cwd()}/${Artifact.ROOT}`, { recursive: true })
+        await Progress.of(`Creating ${Artifact.ROOT}`).run(() => mkdir(`${process.cwd()}/${Artifact.ROOT}`, { recursive: true }))
 
         console.log(`Initialized ${Artifact.ROOT} at ${process.cwd()}/${Artifact.ROOT}`)
         console.log(`Define an artifact at ${Artifact.ROOT}/<name>/${Artifact.DEFINITION}, then run: gstudio compile artifact <name>`)
@@ -32,10 +33,18 @@ export default async function (args: string[], context: { flags: Record<string, 
     }
 
     const reference = TemplateRef.parse(args[0])
-    const resolved = reference.kind === 'url' ? null : (await TemplateRegistry.load()).resolve('template', reference)
-    const source = await TemplateSource.fetch(resolved?.url ?? reference.url!, reference.ref ?? resolved?.ref ?? null, { refresh: context.flags.refresh === true })
-    const template = await Template.read(source, resolved?.name ?? null)
-    const initialized = await template.init(process.cwd(), { force: context.flags.force === true, install: context.flags['no-install'] !== true })
+    const { source, template, initialized } = await Progress.of(`Resolving the template ${args[0]}`).run(async (progress) => {
+        const resolved = reference.kind === 'url' ? null : (await TemplateRegistry.load()).resolve('template', reference)
+
+        progress.say(`Fetching ${resolved?.name ?? args[0]}`)
+
+        const source = await TemplateSource.fetch(resolved?.url ?? reference.url!, reference.ref ?? resolved?.ref ?? null, { refresh: context.flags.refresh === true })
+        const template = await Template.read(source, resolved?.name ?? null)
+
+        progress.say(`Laying ${template.name} down here`)
+
+        return { source, template, initialized: await template.init(process.cwd(), { force: context.flags.force === true, install: context.flags['no-install'] !== true }) }
+    })
 
     console.log(`Initialized ${template.name}${template.version === null ? '' : ` ${template.version}`} from ${TemplateSource.origin(source.url, source.sha)}`)
 

@@ -16,6 +16,10 @@ Every command documents itself: the `command` artifact makes a `help` export —
 `long` for the detailed view — as much a part of a command as the function it runs, so `gstudio help`
 is written by the commands themselves and never drifts from them.
 
+A command never waits in silence either: everything it awaits is wrapped in `Progress`, which names the work
+on stderr while it runs — and erases itself when the work settles, so stdout carries the outcome alone and
+stays as readable to a script as it is to a person.
+
 Compiling writes a script per deterministic step and a skill per action. It shells out to the `claude`
 CLI to write a script, so it is incremental: `compiled.json` keys every step by hash, and only what
 changed is rebuilt. `--model` and `--effort` are passed through.

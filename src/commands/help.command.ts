@@ -1,4 +1,5 @@
 import { Help } from '../classes/Help.class.ts'
+import { Progress } from '../classes/Progress.class.ts'
 
 export const help = {
     short: 'Shows every command there is, or the detailed help of one',
@@ -16,5 +17,5 @@ Arguments:
 }
 
 export default async function (args: string[], context: { flags: Record<string, string | boolean> }) {
-    console.log(await Help.of(args))
+    console.log(await Progress.of('Reading the commands').run(() => Help.of(args)))
 }

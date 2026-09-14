@@ -8,5 +8,8 @@ if [ -z "$path" ]; then
     exit 1
 fi
 
-grep -rn --exclude-dir=.git --exclude-dir=node_modules -F -- "$path" . |
-    cut -d: -f1,2
+grep -rn -F --exclude-dir=.git --exclude-dir=node_modules -- "$path" . |
+    sed -E 's#^\./##' |
+    awk -F: '{print $1":"$2}'
+
+exit 0

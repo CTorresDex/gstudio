@@ -1,21 +1,31 @@
 #!/bin/sh
-set -e
+set -eu
 
-SEARCH_TERM="$1"
-COMMANDS_DIR="src/commands"
+search_term="${1:-}"
 
-if [ ! -d "$COMMANDS_DIR" ]; then
-  echo "Error: commands directory not found at $COMMANDS_DIR" >&2
-  exit 1
+commands_dir="src/commands"
+
+if [ ! -d "$commands_dir" ]; then
+    echo "Error: commands directory not found at $commands_dir" >&2
+    exit 1
 fi
 
-find "$COMMANDS_DIR" -type f -name '*.command.ts' | sort | while IFS= read -r file; do
-  rel="${file#"$COMMANDS_DIR"/}"
-  path="${rel%.command.ts}"
+found_files=$(find "$commands_dir" -type f -name '*.command.ts' | sort)
 
-  if [ -z "$SEARCH_TERM" ] || printf '%s' "$path" | grep -qF -- "$SEARCH_TERM"; then
-    echo "$path: $file"
-  fi
+if [ -z "$found_files" ]; then
+    exit 0
+fi
+
+echo "$found_files" | while IFS= read -r file_path; do
+    rel="${file_path#"$commands_dir"/}"
+    command_path="${rel%.command.ts}"
+
+    if [ -n "$search_term" ]; then
+        case "$command_path" in
+            *"$search_term"*) ;;
+            *) continue ;;
+        esac
+    fi
+
+    echo "${command_path}: ${file_path}"
 done
-
-exit 0

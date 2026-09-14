@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import { Agent } from '../../classes/Agent.class.ts'
 import { Feature } from '../../classes/Feature.class.ts'
 import { TemplateSource } from '../../classes/TemplateSource.class.ts'
+import { Progress } from '../../classes/Progress.class.ts'
 
 export const help = {
     short: 'Compiles a feature where it is written, so installing it costs no llm call',
@@ -22,10 +23,15 @@ Flags:
 export default async function (args: string[], context: { flags: Record<string, string | boolean> }) {
     if (args[0] === undefined) throw new Error('Usage: gstudio compile feature <name | directory> [--model <model>] [--effort <effort>]')
 
-    const feature = (await stat(resolve(args[0])).then((entry) => entry.isDirectory()).catch(() => false))
-        ? await Feature.at(resolve(args[0]))
-        : await Feature.read(await TemplateSource.fetch('.'), args[0])
-    const compiled = await feature.compile(new Agent(typeof context.flags.model === 'string' ? context.flags.model : undefined, typeof context.flags.effort === 'string' ? context.flags.effort : undefined))
+    const { feature, compiled } = await Progress.of(`Reading the feature ${args[0]}`).run(async (progress) => {
+        const feature = (await stat(resolve(args[0]!)).then((entry) => entry.isDirectory()).catch(() => false))
+            ? await Feature.at(resolve(args[0]!))
+            : await Feature.read(await TemplateSource.fetch('.'), args[0]!)
+
+        progress.say(`Writing the scripts and skills of ${feature.name}`)
+
+        return { feature, compiled: await feature.compile(new Agent(typeof context.flags.model === 'string' ? context.flags.model : undefined, typeof context.flags.effort === 'string' ? context.flags.effort : undefined)) }
+    })
 
     console.log(feature.name)
 

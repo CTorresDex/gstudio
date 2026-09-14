@@ -5,8 +5,11 @@ ID: path
 3. `help.short` is a single line without a trailing period, shown for the command in the general listing printed by `gstudio help` and by `gstudio` with no arguments; `help.long` is a multi-line string shown by `gstudio help {path}`, opening with the usage line `Usage: gstudio {path} <args> [--flags]`, then what the command does, its arguments and its flags
 4. A command only reads its input from args and context.flags, delegates every decision to the classes at src/classes and prints the outcome: no types, no helper functions and no variables other than `help` are defined at the top level of the file
 5. Every script receives {path} as a single first argument, written exactly as it appears in the file location (create/artifact), never split into separate words and never needing quotes
+6. A command that waits says what it is waiting for: every `await` in the body sits inside `Progress.of('{label}').run(() => ...)`, where {label} names the work in progress and its subject, as a string or a template literal naming what it is working on (`Reading the registry`, `Fetching ${args[0]}`, `Adding the feature ${args[0]}`). Work that moves on, or has something to report as it goes, is handed the indicator: `progress.say('...')` changes what it is waiting on, `progress.log(line)` prints a finished line above the animation. `Progress` is imported from src/classes/Progress.class.ts, relative to the command file as every other class is. It animates on stderr and erases itself when the work settles, so stdout carries the outcome alone and stays as readable to a script as it is to a person
 
 ```ts
+import { Progress } from '{relative path back to src}/classes/Progress.class.ts'
+
 export const help = {
     short: 'What the command does, in one line',
     long: `Usage: gstudio {path} <args> [--flags]
@@ -21,6 +24,8 @@ Flags:
 }
 
 export default async function (args: string[], context: { flags: Record<string, string | boolean> }) {
+    const outcome = await Progress.of('{label}').run(() => Klass.work(args[0]))
+
     // command definition
 }
 ```
@@ -76,11 +81,13 @@ export default async function (args: string[], context: { flags: Record<string, 
     Evaluate that:
 
     1. The file has EXACTLY two top level definitions and no others: a named `export const help` object literal with a `short` string property and a `long` string property, followed by the anonymous default export of an async function taking the arguments of the template at the rules.
+    2. If the body of the default exported function contains any `await`, every one of them is either the `await` of a `Progress.of({label}).run(...)` call, or written inside the function handed to such a `run`, and every `Progress.of` is given a single non-empty string or template literal.
 
     If it complies with all the rules, exits 0.
     Otherwise, iterate over each discrepancy, print them to stdout and exit with 1.
 </deterministic>
 <llm>
     Ensure that the command only reads its input from args and context.flags, delegates every decision to the classes at src/classes and prints the outcome.
+    Ensure that every Progress label names the work the command is actually waiting on and its subject, rather than repeating the command path or saying something generic like 'Loading'.
     Ensure as well that help.short is a single descriptive line and that help.long opens with the usage line and documents the arguments the command reads from args and every flag it reads from context.flags.
 </llm>

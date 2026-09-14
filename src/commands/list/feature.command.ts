@@ -1,6 +1,7 @@
 import { Ledger } from '../../classes/Ledger.class.ts'
 import { TemplateSource } from '../../classes/TemplateSource.class.ts'
 import { TemplateRegistry } from '../../classes/TemplateRegistry.class.ts'
+import { Progress } from '../../classes/Progress.class.ts'
 
 export const help = {
     short: 'Lists the features installed here and the ones sources provide',
@@ -14,8 +15,10 @@ Arguments:
 }
 
 export default async function (args: string[], context: { flags: Record<string, string | boolean> }) {
-    const registry = await TemplateRegistry.load()
-    const ledger = await Ledger.load(process.cwd())
+    const { registry, ledger } = await Progress.of('Reading the registry and what this project installed').run(async () => ({
+        registry: await TemplateRegistry.load(),
+        ledger: await Ledger.load(process.cwd()),
+    }))
     const aliases = Object.keys(registry.sources).filter((alias) => registry.sources[alias]!.features.length > 0 && (args[0] === undefined || alias.includes(args[0]) || registry.sources[alias]!.features.some((name) => name.includes(args[0]!)))).sort()
 
     if (ledger.names.length > 0) {

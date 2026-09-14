@@ -1,5 +1,6 @@
 import { TemplateSource } from '../../classes/TemplateSource.class.ts'
 import { TemplateRegistry } from '../../classes/TemplateRegistry.class.ts'
+import { Progress } from '../../classes/Progress.class.ts'
 
 export const help = {
     short: 'Lists every installed source and the templates it provides',
@@ -13,7 +14,7 @@ Arguments:
 }
 
 export default async function (args: string[], context: { flags: Record<string, string | boolean> }) {
-    const registry = await TemplateRegistry.load()
+    const registry = await Progress.of('Reading the registry').run(() => TemplateRegistry.load())
     const aliases = Object.keys(registry.sources).filter((alias) => args[0] === undefined || alias.includes(args[0]) || registry.sources[alias]!.templates.some((name) => name.includes(args[0]!))).sort()
 
     if (aliases.length === 0) return console.log(args[0] === undefined ? 'No templates installed. Install one with: gstudio install template <git-url>' : `No installed source matches ${args[0]}`)

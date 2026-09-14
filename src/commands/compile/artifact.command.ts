@@ -1,6 +1,7 @@
 import { Agent } from '../../classes/Agent.class.ts'
 import { Artifact } from '../../classes/Artifact.class.ts'
 import { ArtifactCompiler } from '../../classes/ArtifactCompiler.class.ts'
+import { Progress } from '../../classes/Progress.class.ts'
 
 export const help = {
     short: 'Compiles one artifact into the skills its actions become',
@@ -20,9 +21,15 @@ Flags:
 export default async function (args: string[], context: { flags: Record<string, string | boolean> }) {
     if (args[0] === undefined) throw new Error('Usage: gstudio compile artifact <name> [--model <model>] [--effort <effort>]')
 
-    const { skills, removed } = await new ArtifactCompiler({
-        agent: new Agent(typeof context.flags.model === 'string' ? context.flags.model : undefined, typeof context.flags.effort === 'string' ? context.flags.effort : undefined),
-    }).compile(await Artifact.load(args[0]))
+    const { skills, removed } = await Progress.of(`Reading the artifact ${args[0]}`).run(async (progress) => {
+        const artifact = await Artifact.load(args[0]!)
+
+        progress.say(`Writing the scripts and skills of ${args[0]}`)
+
+        return new ArtifactCompiler({
+            agent: new Agent(typeof context.flags.model === 'string' ? context.flags.model : undefined, typeof context.flags.effort === 'string' ? context.flags.effort : undefined),
+        }).compile(artifact)
+    })
 
     for (const skill of skills) {
         console.log(skill.name)

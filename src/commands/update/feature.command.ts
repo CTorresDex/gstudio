@@ -1,6 +1,7 @@
 import { Agent } from '../../classes/Agent.class.ts'
 import { FeatureInstaller } from '../../classes/FeatureInstaller.class.ts'
 import { TemplateSource } from '../../classes/TemplateSource.class.ts'
+import { Progress } from '../../classes/Progress.class.ts'
 
 export const help = {
     short: 'Brings a feature to what its source now says',
@@ -20,11 +21,11 @@ Flags:
 export default async function (args: string[], context: { flags: Record<string, string | boolean> }) {
     if (args[0] === undefined) throw new Error('Usage: gstudio update feature <name> [--model <model>] [--effort <effort>]')
 
-    const updated = await new FeatureInstaller(
+    const updated = await Progress.of(`Updating the feature ${args[0]}`).run((progress) => new FeatureInstaller(
         process.cwd(),
         new Agent(typeof context.flags.model === 'string' ? context.flags.model : undefined, typeof context.flags.effort === 'string' ? context.flags.effort : undefined),
-        console.log,
-    ).update(args[0])
+        (line) => progress.log(line),
+    ).update(args[0]!))
 
     if (updated.current) return console.log(`${args[0]} is already at ${TemplateSource.commit(updated.sha)}`)
 
